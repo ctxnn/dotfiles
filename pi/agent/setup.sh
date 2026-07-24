@@ -50,6 +50,12 @@ if [[ "$MODE" == "apply" ]]; then
       }
       echo "installed $package"
     done < "$SOURCE_DIR/packages.txt"
+
+    # pi-subagents imports `typebox/compile` at runtime, but its package
+    # metadata currently declares typebox as a peer dependency. Ensure the
+    # shared Pi extension root supplies the compatible runtime dependency.
+    npm install --prefix "$HOME/.pi/agent/npm" --save --no-audit --no-fund typebox@1.1.38 >/dev/null
+    echo "installed runtime peer dependency typebox@1.1.38"
   else
     echo "Pi is not installed; skipping package installation." >&2
   fi

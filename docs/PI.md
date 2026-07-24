@@ -114,7 +114,7 @@ The Pi setup script:
 2. links source configuration into `~/.pi/agent/`;
 3. links workflow settings under `~/.pi/workflows/`;
 4. links the Exa preference to `~/.pi/web-search.json`;
-5. installs the packages listed in `packages.txt`;
+5. installs the packages listed in `packages.txt` and the `typebox@1.1.38` runtime peer dependency required by `pi-subagents` async runners;
 6. never creates or copies `auth.json`.
 
 After installation, start a new Pi session or run:
@@ -412,7 +412,7 @@ The orchestration policy uses the researcher for external facts and the scout fo
 | `pi-subagents` | Named roles, chains, parallel runs, async lifecycle, fallback models |
 | `@quintinshaw/pi-dynamic-workflows` | Generated workflows, retries, checkpoints, worktrees, dashboards |
 
-The package list is represented both in `settings.json` and `packages.txt` so a fresh machine can recreate the runtime without committing `node_modules`.
+The package list is represented both in `settings.json` and `packages.txt` so a fresh machine can recreate the runtime without committing `node_modules`. The installer also adds `typebox@1.1.38` directly to Pi's local extension dependency root because `pi-subagents@0.35.1` imports `typebox/compile` as a runtime peer dependency.
 
 ## Destructive-command permission system
 
