@@ -44,5 +44,8 @@ pi/agent/.update-check
 pi/agent/extensions/*/node_modules/
 pi/agent/usage-tracker-*.json
 
+# Per-project pi-subagents runtime artifacts
+.pi-subagents/
+
 # tmux runtime state
 *.tmux-resurrect
