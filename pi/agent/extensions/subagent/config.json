@@ -1,0 +1,16 @@
+{
+  "toolDescriptionMode": "compact",
+  "asyncByDefault": true,
+  "forceTopLevelAsync": false,
+  "globalConcurrencyLimit": 2,
+  "maxSubagentDepth": 1,
+  "maxSubagentSpawnsPerSession": 50,
+  "parallel": {
+    "maxTasks": 8,
+    "concurrency": 2
+  },
+  "completionBatch": {
+    "enabled": true,
+    "debounceMs": 250
+  }
+}

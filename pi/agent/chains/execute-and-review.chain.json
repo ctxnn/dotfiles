@@ -1,0 +1,37 @@
+{
+  "name": "execute-and-review",
+  "description": "Implement an already-approved plan with one writer, then run Terra review, Sol verification, and Luna synthesis.",
+  "chain": [
+    {
+      "agent": "worker",
+      "phase": "Implementation",
+      "label": "Sol implementation",
+      "as": "implementation",
+      "task": "Implement this user-approved task or plan: {task}\n\nYou are the sole writer in the active worktree. Preserve approved scope, run focused validation, and report changed files, commands with exit codes, evidence, residual risks, and anything left undone. Escalate any new product or architecture decision instead of guessing.",
+      "progress": true
+    },
+    {
+      "agent": "reviewer",
+      "phase": "Review I",
+      "label": "Terra adversarial review",
+      "as": "terraReview",
+      "task": "Review the implementation for: {task}\n\nWorker handoff:\n{outputs.implementation}\n\nInspect the actual diff and tests from fresh evidence. Do not modify project/source files. Report only concrete issues, validation gaps, and smallest safe fixes.",
+      "output": false
+    },
+    {
+      "agent": "final-verifier",
+      "phase": "Review II",
+      "label": "Sol final verification",
+      "as": "solVerification",
+      "task": "Final-verify the implementation for: {task}\n\nWorker handoff:\n{outputs.implementation}\n\nTerra review:\n{outputs.terraReview}\n\nIndependently inspect the repository and diff. Confirm or reject findings, identify misses, and issue an APPROVED, NEEDS CHANGES, or BLOCKED verdict. Do not modify files.",
+      "output": false
+    },
+    {
+      "agent": "synthesizer",
+      "phase": "Synthesis",
+      "label": "Luna delivery synthesis",
+      "task": "Create the final implementation review memo for: {task}\n\nWorker:\n{outputs.implementation}\n\nTerra:\n{outputs.terraReview}\n\nSol:\n{outputs.solVerification}\n\nState completed work, confirmed findings, fixes still required, rejected suggestions, validation evidence, and residual risk. Do not claim completion if Sol did not approve.",
+      "output": false
+    }
+  ]
+}

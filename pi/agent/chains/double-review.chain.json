@@ -1,0 +1,29 @@
+{
+  "name": "double-review",
+  "description": "Sequential Terra review, independent Sol verification, then Luna synthesis.",
+  "chain": [
+    {
+      "agent": "reviewer",
+      "phase": "Review I",
+      "label": "Terra adversarial review",
+      "as": "terraReview",
+      "task": "Review this target from fresh context: {task}\n\nInspect the actual repository, relevant instructions, approved plan, and current diff. Do not modify project/source files. Return only evidence-backed findings with severity, file/line references, smallest safe fixes, and validation gaps.",
+      "output": false
+    },
+    {
+      "agent": "final-verifier",
+      "phase": "Review II",
+      "label": "Sol final verification",
+      "as": "solVerification",
+      "task": "Independently verify this target: {task}\n\nStage-one Terra review:\n{outputs.terraReview}\n\nInspect the real repository and diff yourself. Confirm, reject, or downgrade each material claim; find important misses; do not modify project/source files. Return a final APPROVED, NEEDS CHANGES, or BLOCKED verdict.",
+      "output": false
+    },
+    {
+      "agent": "synthesizer",
+      "phase": "Synthesis",
+      "label": "Luna review synthesis",
+      "task": "Produce one concise decision memo for: {task}\n\nTerra review:\n{outputs.terraReview}\n\nSol verification:\n{outputs.solVerification}\n\nSeparate confirmed blockers, fixes worth doing now, optional improvements, rejected findings, validation evidence, and residual risk. Do not modify project/source files.",
+      "output": false
+    }
+  ]
+}

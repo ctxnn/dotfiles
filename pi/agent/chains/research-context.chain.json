@@ -1,0 +1,35 @@
+{
+  "name": "research-context",
+  "description": "Parallel external research and local reconnaissance followed by Luna synthesis.",
+  "chain": [
+    {
+      "parallel": [
+        {
+          "agent": "researcher",
+          "phase": "Evidence",
+          "label": "External evidence",
+          "as": "externalResearch",
+          "task": "Research the external evidence needed for: {task}. Use Exa, prioritize primary sources, cite URLs, state confidence, and stop when decision-relevant gaps are closed.",
+          "output": false
+        },
+        {
+          "agent": "scout",
+          "phase": "Evidence",
+          "label": "Local code context",
+          "as": "localContext",
+          "task": "Inspect the local repository for: {task}. Map relevant files, behavior, constraints, conventions, tests, and integration risks. Do not edit files.",
+          "output": false
+        }
+      ],
+      "concurrency": 2,
+      "failFast": false
+    },
+    {
+      "agent": "synthesizer",
+      "phase": "Synthesis",
+      "label": "Decision brief",
+      "task": "Synthesize a decision-ready brief for: {task}\n\nExternal research:\n{outputs.externalResearch}\n\nLocal repository context:\n{outputs.localContext}\n\nConnect external evidence to local implications, identify disagreements and gaps, and recommend the smallest sound next step.",
+      "output": false
+    }
+  ]
+}

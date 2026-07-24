@@ -1,0 +1,16 @@
+{
+  "keywordTriggerEnabled": true,
+  "keywordTriggerWord": "workflow",
+  "defaultConcurrency": 2,
+  "defaultAgentRetries": 1,
+  "defaultAgentTimeoutMs": null,
+  "defaultTokenBudget": null,
+  "progressPanelMode": "detailed",
+  "progressPanelMaxAgents": 12,
+  "persistAgentSessions": false,
+  "deliveredResultMaxChars": 12000,
+  "excludeSubagentTools": [
+    "subagent",
+    "subagent_wait"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "defaults": {
+    "model": null,
+    "thinking": null,
+    "statusLabel": "◈ ready"
+  },
+  "phases": {
+    "planning": {
+      "model": {
+        "provider": "openai-codex",
+        "id": "gpt-5.6-sol"
+      },
+      "thinking": "high",
+      "statusLabel": "◇ planning",
+      "systemPrompt": "[PLANNING]\nPlan file: ${planFilePath}\nExplore first. Produce a concise, executable checklist with acceptance evidence. Do not implement until the user approves in Plannotator."
+    },
+    "executing": {
+      "model": {
+        "provider": "openai-codex",
+        "id": "gpt-5.6-sol"
+      },
+      "thinking": "high",
+      "statusLabel": "◆ executing",
+      "systemPrompt": "[EXECUTING]\nFollow the approved plan exactly. Keep one writer in the active worktree. Remaining steps:\n${todoList}"
+    },
+    "reviewing": {
+      "model": {
+        "provider": "openai-codex",
+        "id": "gpt-5.6-terra"
+      },
+      "thinking": "high",
+      "statusLabel": "◉ reviewing"
+    }
+  }
+}

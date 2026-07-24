@@ -1,0 +1,8 @@
+npm:pi-web-access
+npm:pi-copy-all
+npm:pi-ask-user
+npm:@plannotator/pi-extension
+npm:pi-btw
+npm:pi-extension-nvidia-nim
+npm:pi-subagents
+npm:@quintinshaw/pi-dynamic-workflows

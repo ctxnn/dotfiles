@@ -1,0 +1,93 @@
+{
+  "lastChangelogVersion": "0.82.0",
+  "theme": "dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "medium",
+  "packages": [
+    "npm:pi-web-access",
+    "npm:pi-copy-all",
+    "npm:pi-ask-user",
+    "npm:@plannotator/pi-extension",
+    "npm:pi-btw",
+    "npm:pi-extension-nvidia-nim",
+    "npm:pi-subagents",
+    "npm:@quintinshaw/pi-dynamic-workflows"
+  ],
+  "subagents": {
+    "defaultModel": "openai-codex/gpt-5.6-sol",
+    "modelScope": {
+      "enforce": true,
+      "allow": [
+        "openai-codex/gpt-5.*",
+        "nvidia-nim/thinkingmachines/inkling"
+      ]
+    },
+    "agentOverrides": {
+      "planner": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "scout": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "medium",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "context-builder": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "medium",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "researcher": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "medium",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "worker": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "reviewer": {
+        "model": "openai-codex/gpt-5.6-terra",
+        "thinking": "high",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ],
+        "acceptanceRole": "read-only"
+      },
+      "oracle": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "advisor": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      },
+      "delegate": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "medium",
+        "fallbackModels": [
+          "openai-codex/gpt-5.6-terra:medium"
+        ]
+      }
+    }
+  }
+}

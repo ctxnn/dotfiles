@@ -1,0 +1,11 @@
+{
+  "tiers": {
+    "small": "openai-codex/gpt-5.5:medium",
+    "medium": "openai-codex/gpt-5.6-luna:high",
+    "big": "openai-codex/gpt-5.6-sol:high",
+    "review": "openai-codex/gpt-5.6-terra:high",
+    "verify": "openai-codex/gpt-5.6-sol:high",
+    "synthesis": "openai-codex/gpt-5.6-luna:high",
+    "fallback": "openai-codex/gpt-5.6-terra:medium"
+  }
+}
