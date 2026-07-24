@@ -440,11 +440,15 @@ Subagents normally run without their own approval UI. The extension therefore fa
 
 Print/JSON modes also fail closed. Direct `!` user-shell commands are guarded too.
 
-Check that the extension is active:
+Inspect or control the session-only gate:
 
 ```text
-/permissions
+/permissions status
+/permissions off
+/permissions on
 ```
+
+`/permissions off` requires an interactive confirmation and changes the indicator to `⚠ guard paused`. It affects only the current interactive Pi process. The gate automatically returns to `🛡 guarded` after `/reload`, restart, `/new`, `/resume`, or `/fork`. Separately spawned subagents load their own guarded extension instance and therefore remain protected. Only the user may pause the gate; agent instructions explicitly prohibit requesting or invoking the toggle to complete work.
 
 This is a command-pattern enforcement layer, not an operating-system sandbox. Trusted third-party extensions can execute their own process APIs outside the built-in Bash tool, and deliberately obfuscated programs cannot be perfectly classified. Keep extension sources trusted and use OS-level sandboxing for hostile code.
 
@@ -474,7 +478,7 @@ If the rolling budget is full, a request waits for the next slot. If the provide
 | `/login nvidia-nim` | Authenticate NVIDIA-NIM locally |
 | `/reload` | Reload extensions, skills, prompts, and configuration |
 | `/nim-rate-status` | Inspect the custom NVIDIA request budget |
-| `/permissions` | Confirm the destructive-command gate is active |
+| `/permissions [status|on|off]` | Inspect or toggle the current session's destructive-command gate |
 
 ## Maintenance and validation
 

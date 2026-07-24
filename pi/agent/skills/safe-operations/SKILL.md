@@ -13,8 +13,9 @@ The global `permission-gate` extension is the enforcement boundary. This skill d
 2. Explain what will be changed, why it is necessary, the exact scope, and the recovery path before requesting approval.
 3. Never split, encode, alias, script, or otherwise rewrite a command to evade the permission gate.
 4. Approval applies to the exact displayed command once. A changed command requires a new approval.
-5. If a headless or subagent process is blocked, do not retry with a bypass. Return the blocked command and rationale to the parent session so the user can decide.
-6. After an approved destructive operation, verify the intended result and report unexpected effects immediately.
+5. Only the user may pause the gate with `/permissions off`. Never invoke, request, or recommend disabling it to complete a task.
+6. If a headless or subagent process is blocked, do not retry with a bypass. Return the blocked command and rationale to the parent session so the user can decide.
+7. After an approved destructive operation, verify the intended result and report unexpected effects immediately.
 
 ## Guarded categories
 

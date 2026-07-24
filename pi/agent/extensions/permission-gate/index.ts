@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { assessDangerousCommand, guardedOperationCount } from "./rules.ts";
 
 const MAX_COMMAND_DISPLAY = 4_000;
@@ -41,12 +41,19 @@ async function requestApproval(
 }
 
 export default function permissionGate(pi: ExtensionAPI) {
+  let enabled = true;
+
+  const updateStatus = (ctx: ExtensionContext) => {
+    if (ctx.hasUI) ctx.ui.setStatus("permission-gate", enabled ? "🛡 guarded" : "⚠ guard paused");
+  };
+
   pi.on("session_start", async (_event, ctx) => {
-    if (ctx.hasUI) ctx.ui.setStatus("permission-gate", "🛡 guarded");
+    enabled = true;
+    updateStatus(ctx);
   });
 
   pi.on("tool_call", async (event, ctx) => {
-    if (event.toolName !== "bash") return;
+    if (!enabled || event.toolName !== "bash") return;
     const command = (event.input as { command?: unknown }).command;
     if (typeof command !== "string" || assessDangerousCommand(command).length === 0) return;
 
@@ -60,7 +67,7 @@ export default function permissionGate(pi: ExtensionAPI) {
   });
 
   pi.on("user_bash", async (event, ctx) => {
-    if (assessDangerousCommand(event.command).length === 0) return;
+    if (!enabled || assessDangerousCommand(event.command).length === 0) return;
     const decision = await requestApproval(
       event.command,
       event.cwd,
@@ -80,11 +87,47 @@ export default function permissionGate(pi: ExtensionAPI) {
   });
 
   pi.registerCommand("permissions", {
-    description: "Show the destructive-command permission policy",
-    handler: async (_args, ctx) => {
+    description: "Show or change the session-only destructive-command gate: status | on | off",
+    handler: async (args, ctx) => {
+      const action = args.trim().toLowerCase() || "status";
+
+      if (action === "on") {
+        enabled = true;
+        updateStatus(ctx);
+        ctx.ui.notify("Permission gate enabled for this session.", "info");
+        return;
+      }
+
+      if (action === "off") {
+        if (!ctx.hasUI) {
+          throw new Error("Permission gate cannot be disabled without an interactive approval UI.");
+        }
+        if (!enabled) {
+          ctx.ui.notify("Permission gate is already paused for this session.", "warning");
+          return;
+        }
+        const confirmed = await ctx.ui.confirm(
+          "⚠ Pause destructive-command guard?",
+          "This disables command approval only in the current interactive Pi session. Subagents remain guarded. The gate automatically re-enables after /reload, restart, /new, /resume, or /fork. Pause it now?",
+        );
+        if (!confirmed) {
+          ctx.ui.notify("Permission gate remains enabled.", "info");
+          return;
+        }
+        enabled = false;
+        updateStatus(ctx);
+        ctx.ui.notify("Permission gate paused for this session only.", "warning");
+        return;
+      }
+
+      if (action !== "status") {
+        ctx.ui.notify("Usage: /permissions [status|on|off]", "warning");
+        return;
+      }
+
       ctx.ui.notify(
-        `Permission gate active: ${guardedOperationCount} destructive command families; approvals are one-time; headless/subagent commands fail closed.`,
-        "info",
+        `Permission gate ${enabled ? "active" : "paused"}: ${guardedOperationCount} destructive command families; approvals are one-time; headless/subagent commands always fail closed.`,
+        enabled ? "info" : "warning",
       );
     },
   });

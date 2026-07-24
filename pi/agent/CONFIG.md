@@ -29,7 +29,7 @@ Main: Sol-medium
 | Diagnose subagents | `/subagents-doctor` |
 | Watch all subagent runs | `/subagents-fleet` or `Ctrl+Alt+F` |
 | Stop a subagent | `/subagents-stop <run-id>` |
-| Show permission policy | `/permissions` |
+| Permission status/toggle | `/permissions [status|on|off]` |
 | Open workflow dashboard | `/workflows` |
 | Check NIM rolling budget | `/nim-rate-status` |
 | Side conversation | `/btw <question>` |
@@ -55,7 +55,7 @@ Pi/provider retry logic gets the first opportunity to honor server backoff. If t
 
 `extensions/permission-gate/` intercepts dangerous shell operations before execution. Interactive commands require one-time approval for the exact displayed command. Headless and subagent processes fail closed, report the blocked operation, and require the parent session to bring it back to the user. The gate covers recursive/forced deletion, privilege escalation, destructive Git, disk/filesystem, process/system, SQL, infrastructure/cloud, and delete-sync operations. Never store bypasses or attempt to evade the gate.
 
-Use `/permissions` to confirm the gate is active.
+Use `/permissions status` to inspect it, `/permissions off` to pause it after confirmation for the current interactive session only, and `/permissions on` to re-enable it. A paused gate automatically resets to guarded after reload, restart, new/resumed/forked session. Subagents remain guarded.
 
 ## BTW model
 
