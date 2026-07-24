@@ -73,3 +73,5 @@ Use `/btw` for side questions that should not derail the main run. Inject or sum
 ## Safety
 
 Never expose or copy credentials. Never reset or rewrite git history blindly. Confirm production, billing, secrets, deployment, destructive, or externally visible actions. Preserve user changes and assume other agents may be operating concurrently.
+
+The global `permission-gate` extension is the enforcement boundary for destructive shell commands. Never evade it by splitting, encoding, aliasing, scripting, or rephrasing an operation. Approval is valid only for the exact command shown and only once. If a headless child/subagent is blocked, return the command and rationale to the parent for an explicit user decision; do not retry through another mechanism. Load the `safe-operations` skill when destructive work is necessary.

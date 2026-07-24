@@ -69,12 +69,16 @@ pi/
 │   │   └── research-context.chain.json
 │   ├── extensions/
 │   │   ├── nvidia-nim-rate-guard.ts
+│   │   ├── permission-gate/
+│   │   │   ├── index.ts
+│   │   │   └── rules.ts
 │   │   └── subagent/config.json
 │   ├── prompts/
 │   │   ├── deep-review.md
 │   │   ├── research-brief.md
 │   │   └── ship-reviewed.md
 │   └── skills/
+│       ├── safe-operations/SKILL.md
 │       └── team-orchestration/SKILL.md
 ├── workflows/
 │   ├── model-tiers.json
@@ -235,7 +239,29 @@ The global policy requires approval before non-trivial implementation begins.
 
 ## Named subagents
 
-Common commands provided by `pi-subagents`:
+A subagent is an isolated Pi child session with a named role, model, tools, instructions, transcript, output, and lifecycle status. It does not silently replace the main session. The main session launches it, receives its result, and remains responsible for decisions and final delivery.
+
+### Starting work
+
+You can ask naturally:
+
+```text
+Use the scout to map the authentication flow.
+Ask the tester to validate the current diff.
+Run the double-review workflow on my changes.
+```
+
+Or invoke roles directly:
+
+```text
+/run scout map the authentication flow
+/run researcher find primary-source guidance for OAuth token rotation
+/run tester execute focused tests for the current diff
+/parallel scout "inspect backend" -> researcher "check official guidance"
+/chain scout "map the module" -> planner "produce an implementation plan"
+```
+
+Common commands:
 
 | Command | Purpose |
 |---|---|
@@ -246,20 +272,66 @@ Common commands provided by `pi-subagents`:
 | `/subagents` | Inspect configured/running subagents |
 | `/subagents-models [agent]` | Show effective models and fallbacks |
 | `/subagents-doctor` | Diagnose configuration and providers |
-| `/subagents-fleet` | View active/completed runs |
+| `/subagents-fleet` | Open the live fleet inspector |
 | `/subagents-stop <id>` | Stop a run |
 | `/subagent-cost` | Show child-agent usage/cost |
 
-Examples:
+Subagents are asynchronous by default, so the main prompt returns control while children continue. Global child concurrency is 2, nested delegation depth is 1, and a parent session is capped at 50 child launches.
+
+### Watching every task
+
+Yes—you can inspect what current-session subagents are doing instead of waiting blindly.
+
+1. **Compact progress widget:** appears above the editor while background runs are active. Chains show stage and per-agent state.
+2. **Fleet inspector:** run `/subagents-fleet`.
+3. **Open while Pi is busy:** press `Ctrl+Alt+F`, even during an active foreground turn.
+4. **Navigate:** `↑`/`↓` or `j`/`k` selects a child.
+5. **Read transcript:** `PgUp`/`PgDn` scrolls the selected child's live transcript tail.
+6. **Refresh:** press `r`.
+7. **Close:** press `Esc`.
+
+The fleet is inspection-only so monitoring cannot accidentally alter a run. It includes current-session foreground work, recent asynchronous children, workflow labels, transcript tails, completion state, and output/session paths.
+
+You can also ask the main agent:
 
 ```text
-/run scout map the authentication flow
-/run researcher find primary-source guidance for OAuth token rotation
-/parallel scout "inspect backend" -> researcher "check official guidance"
-/chain scout "map the module" -> planner "produce an implementation plan"
+Show all active subagent runs.
+Show the transcript for run <run-id>.
+What is each subagent doing right now?
 ```
 
-Subagents are asynchronous by default. Global child concurrency is 2, nested delegation depth is 1, and a parent session is capped at 50 child launches.
+The underlying management calls can inspect a fleet, a specific run, or up to 500 lines of one child's transcript.
+
+### Controlling a run
+
+Stop a run directly:
+
+```text
+/subagents-stop <run-id>
+```
+
+Or use natural instructions so the parent invokes the control API:
+
+```text
+Stop run <run-id>.
+Steer run <run-id>: focus only on the authentication regression.
+Interrupt run <run-id> and ask it to summarize what it has found.
+```
+
+A stopped run remains in lifecycle history. Background completion notifications and final summaries return to the main session.
+
+### Reviewing results
+
+A child result is an intermediate handoff, not automatic approval. Review it in four layers:
+
+1. inspect the task and model in `/subagents-fleet`;
+2. read the live or completed transcript;
+3. inspect changed files and validation evidence yourself;
+4. use `double-review` for Terra review, Sol verification, and Luna synthesis.
+
+Async runs persist `status.json`, `events.jsonl`, live `output-<index>.log`, a Markdown subagent log, and a final JSON result under Pi's local runtime directories. These artifacts are intentionally excluded from the dotfiles repository.
+
+The fleet is scoped to the current parent session. A separate Pi session has its own fleet and local artifacts.
 
 ## Dynamic workflows
 
@@ -342,6 +414,40 @@ The orchestration policy uses the researcher for external facts and the scout fo
 
 The package list is represented both in `settings.json` and `packages.txt` so a fresh machine can recreate the runtime without committing `node_modules`.
 
+## Destructive-command permission system
+
+The permission system has two layers:
+
+1. `skills/safe-operations/SKILL.md` defines the procedure: prefer reversible alternatives, explain scope/recovery, never evade the gate, and verify afterward.
+2. `extensions/permission-gate/` enforces the boundary before shell execution.
+
+Guarded command families include:
+
+- recursive or forced deletion, `find -delete`, shredding, and scripted recursive deletion;
+- `sudo` and broad recursive/world-writable permission changes;
+- destructive Git reset, clean, restore, history rewrite, force-push, branch/tag/stash/file deletion;
+- filesystem, partition, raw-disk, forced process, and shutdown commands;
+- destructive SQL operations;
+- destructive Docker, Kubernetes, Terraform, cloud, and `rsync --delete` operations.
+
+### Interactive behavior
+
+Pi displays the reasons, working directory, and exact command. Approval allows that exact command **once**. A changed command prompts again. Declining blocks the tool call.
+
+### Subagent and headless behavior
+
+Subagents normally run without their own approval UI. The extension therefore fails closed: it blocks the command and tells the child to return the exact blocked operation to the parent. The parent can then explain it and request approval in the interactive session. The child must not retry through an alias, script, encoding, or alternate tool.
+
+Print/JSON modes also fail closed. Direct `!` user-shell commands are guarded too.
+
+Check that the extension is active:
+
+```text
+/permissions
+```
+
+This is a command-pattern enforcement layer, not an operating-system sandbox. Trusted third-party extensions can execute their own process APIs outside the built-in Bash tool, and deliberately obfuscated programs cannot be perfectly classified. Keep extension sources trusted and use OS-level sandboxing for hostile code.
+
 ## Custom NVIDIA-NIM guard
 
 `extensions/nvidia-nim-rate-guard.ts` enforces a shared cross-process rolling window:
@@ -368,6 +474,7 @@ If the rolling budget is full, a request waits for the next slot. If the provide
 | `/login nvidia-nim` | Authenticate NVIDIA-NIM locally |
 | `/reload` | Reload extensions, skills, prompts, and configuration |
 | `/nim-rate-status` | Inspect the custom NVIDIA request budget |
+| `/permissions` | Confirm the destructive-command gate is active |
 
 ## Maintenance and validation
 
