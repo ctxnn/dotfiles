@@ -27,7 +27,8 @@ Main: Sol-medium
 | Run saved chain directly | `/run-chain <name> -- <task>` |
 | Inspect subagent models | `/subagents-models` |
 | Diagnose subagents | `/subagents-doctor` |
-| Watch all subagent runs | `/subagents-fleet` or `Ctrl+Alt+F` |
+| Supervise subagent runs | `/subagents-dashboard` or `Ctrl+Alt+D` |
+| Native read-only fleet | `/subagents-fleet` or `Ctrl+Alt+F` |
 | Stop a subagent | `/subagents-stop <run-id>` |
 | Permission status/toggle | `/permissions [status|on|off]` |
 | Open workflow dashboard | `/workflows` |
@@ -77,6 +78,7 @@ BTW stores its override in hidden session state and does not change the main mod
 | `agents/*.md` | Custom tester, verifier, and synthesizer roles |
 | `chains/*.chain.json` | Reusable orchestration pipelines |
 | `extensions/subagent/config.json` | Async/concurrency/spawn guardrails |
+| `extensions/subagent-dashboard/` | Interactive current-session supervisor dashboard |
 | `extensions/permission-gate/` | Fail-closed destructive-command approval gate |
 | `extensions/nvidia-nim-rate-guard.ts` | Cross-process rolling request limiter |
 | `plannotator.json` | Planning/execution/review phase models |

@@ -31,7 +31,9 @@ Keep the main conversation on OpenAI for continuity. Use NVIDIA-NIM only in isol
 
 ## Orchestration policy
 
-Delegate when work is likely to exceed ten minutes, has independent research/review tracks, benefits from fresh-context verification, or the user explicitly requests a workflow. Do not delegate trivial edits or highly interactive work.
+Do not launch a subagent, chain, reviewer, or dynamic workflow without the user's explicit approval for that launch, unless the user directly asks to run one. First state the proposed role(s), task, expected benefit, and that no project files will be changed unless separately approved. Do not delegate trivial edits or highly interactive work.
+
+A worker handoff is intermediate evidence, not completion. Recommend validation or review when risk warrants it, but ask before launching reviewer/tester stages rather than spawning them automatically.
 
 Prefer this lifecycle for meaningful implementation:
 
@@ -44,10 +46,11 @@ Rules:
 - One writer owns the active worktree. Parallelize reading, research, tests, and review—not ordinary writes.
 - Use fresh context for adversarial reviewers and forked context only when inherited decisions matter.
 - Every child gets a self-contained contract: goal, relevant paths, constraints, acceptance criteria, validation, output, and stop conditions.
-- Treat a worker result as an intermediate handoff, not completion. Run both review stages before declaring non-trivial implementation complete.
-- Stage 1 (`reviewer`) finds concrete correctness, regression, test, security, and maintainability issues.
-- Stage 2 (`final-verifier`) independently verifies the actual diff, challenges stage 1, rejects weak findings, and catches misses.
-- `synthesizer` merges reports without inventing consensus.
+- Use `/subagents-dashboard` or `Ctrl+Alt+D` for readable live supervision and confirmed interrupt/stop controls; keep `/subagents-fleet` as the native read-only fallback.
+- Treat a worker result as an intermediate handoff, not completion. Offer the configured review stages when appropriate; launch them only after user approval.
+- If approved, stage 1 (`reviewer`) finds concrete correctness, regression, test, security, and maintainability issues.
+- If approved, stage 2 (`final-verifier`) independently verifies the actual diff, challenges stage 1, rejects weak findings, and catches misses.
+- If approved, `synthesizer` merges reports without inventing consensus.
 - If review uncovers an unapproved product or architecture decision, return to `ask_user` before edits.
 - Use worktree isolation only for explicitly partitioned concurrent writers.
 

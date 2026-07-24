@@ -5,7 +5,7 @@ description: Use for non-trivial implementation, multi-agent research, double re
 
 # Team Orchestration
 
-Use the configured roles and saved chains instead of inventing an ad hoc swarm.
+Use the configured roles and saved chains instead of inventing an ad hoc swarm. Before launching any child or chain, obtain explicit user approval for the proposed role(s), task, and expected benefit unless the user directly requested the launch.
 
 ## Standard paths
 
@@ -17,13 +17,14 @@ Use the configured roles and saved chains instead of inventing an ad hoc swarm.
 ## Mandatory boundaries
 
 1. Gather evidence before asking the user.
-2. Use `ask_user` for consequential ambiguity.
-3. Use Plannotator for approval of non-trivial plans.
-4. Keep one writer in the active worktree.
-5. Use fresh context for both review stages.
-6. Terra reviews first; Sol independently verifies second; Luna synthesizes last.
-7. Treat NVIDIA-NIM children as repeatable isolated tasks. Their fallback is Terra-medium.
-8. Do not declare completion from a worker handoff alone.
+2. Before delegation, state the proposed role(s), task, expected benefit, and whether files may change; wait for explicit approval unless the user directly requested the launch.
+3. Use `ask_user` for consequential ambiguity.
+4. Use Plannotator for approval of non-trivial plans.
+5. Keep one writer in the active worktree.
+6. Use fresh context for both review stages when the user approves them.
+7. Terra reviews first; Sol independently verifies second; Luna synthesizes last when the user approves the review pipeline.
+8. Treat NVIDIA-NIM children as repeatable isolated tasks. Their fallback is Terra-medium.
+9. Do not declare completion from a worker handoff alone.
 
 ## Child contract
 

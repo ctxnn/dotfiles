@@ -69,6 +69,10 @@ pi/
 │   │   └── research-context.chain.json
 │   ├── extensions/
 │   │   ├── nvidia-nim-rate-guard.ts
+│   │   ├── subagent-dashboard/
+│   │   │   ├── index.ts
+│   │   │   ├── dashboard.ts
+│   │   │   └── types.ts
 │   │   ├── permission-gate/
 │   │   │   ├── index.ts
 │   │   │   └── rules.ts
@@ -272,25 +276,52 @@ Common commands:
 | `/subagents` | Inspect configured/running subagents |
 | `/subagents-models [agent]` | Show effective models and fallbacks |
 | `/subagents-doctor` | Diagnose configuration and providers |
-| `/subagents-fleet` | Open the live fleet inspector |
+| `/subagents-dashboard` | Open the interactive supervisor dashboard |
+| `/subagents-fleet` | Open the native read-only fleet inspector |
 | `/subagents-stop <id>` | Stop a run |
 | `/subagent-cost` | Show child-agent usage/cost |
 
 Subagents are asynchronous by default, so the main prompt returns control while children continue. Global child concurrency is 2, nested delegation depth is 1, and a parent session is capped at 50 child launches.
 
-### Watching every task
+### Watching and supervising every task
 
 Yes—you can inspect what current-session subagents are doing instead of waiting blindly.
 
-1. **Compact progress widget:** appears above the editor while background runs are active. Chains show stage and per-agent state.
-2. **Fleet inspector:** run `/subagents-fleet`.
-3. **Open while Pi is busy:** press `Ctrl+Alt+F`, even during an active foreground turn.
-4. **Navigate:** `↑`/`↓` or `j`/`k` selects a child.
-5. **Read transcript:** `PgUp`/`PgDn` scrolls the selected child's live transcript tail.
-6. **Refresh:** press `r`.
-7. **Close:** press `Esc`.
+#### Interactive supervisor dashboard
 
-The fleet is inspection-only so monitoring cannot accidentally alter a run. It includes current-session foreground work, recent asynchronous children, workflow labels, transcript tails, completion state, and output/session paths.
+Open the clearer control center with:
+
+```text
+/subagents-dashboard
+```
+
+or press `Ctrl+Alt+D`.
+
+It shows active and recent current-session runs, role/task/phase, state, model/thinking when reported, current tool/path, elapsed time, transcript tail, and artifact/session/output paths. It refreshes from the documented `pi-subagents` RPC and lifecycle events without importing package internals.
+
+| Key | Action |
+|---|---|
+| `↑`/`↓` or `j`/`k` | Select a child |
+| `Enter` | Toggle full run details |
+| `t` | Focus the transcript |
+| `o` | Show read-only artifact/session paths |
+| `PgUp`/`PgDn` | Scroll details/transcript; scrolling up pauses live follow |
+| `Home`/`End` | Jump to start / resume live follow |
+| `f` or `1`–`4` | Cycle/select active, completed, attention, or all filters |
+| `c` | Copy the selected run ID |
+| `i` | Confirm and soft-interrupt an eligible run |
+| `s` | Confirm and stop an eligible running async run |
+| `r` | Refresh immediately |
+| `Tab` | Cycle overview, detail, transcript, and paths |
+| `Esc` | Close |
+
+Interrupt and stop always require an interactive confirmation. Stop applies to the whole selected async run. The dashboard cannot spawn, steer, resume, edit files, or monitor another Pi session.
+
+#### Native fleet fallback
+
+The original package UI remains available through `/subagents-fleet` or `Ctrl+Alt+F`. It is inspection-only and is also the textual fallback outside TUI mode. Use `↑`/`↓` or `j`/`k` to select, `PgUp`/`PgDn` to scroll, `r` to refresh, and `Esc` to close.
+
+The compact progress widget still appears above the editor while background work is active. Chains show stage and per-agent state.
 
 You can also ask the main agent:
 
@@ -324,7 +355,7 @@ A stopped run remains in lifecycle history. Background completion notifications 
 
 A child result is an intermediate handoff, not automatic approval. Review it in four layers:
 
-1. inspect the task and model in `/subagents-fleet`;
+1. inspect the task and model in `/subagents-dashboard` (or native `/subagents-fleet`);
 2. read the live or completed transcript;
 3. inspect changed files and validation evidence yourself;
 4. use `double-review` for Terra review, Sol verification, and Luna synthesis.

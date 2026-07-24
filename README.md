@@ -10,7 +10,7 @@ This repository keeps editor behavior, terminal ergonomics, AI-agent orchestrati
 |---|---|---|
 | **Neovim** | Lua config, lazy.nvim plugin declarations and lockfile, LSP, formatting, completion, Telescope, Neo-tree, Treesitter, Git signs, Markdown preview, Catppuccin | [docs/NVIM.md](docs/NVIM.md) |
 | **tmux** | `Ctrl-a` prefix, splits in the current directory, Vim-style copy mode, pane management, sessions, TPM, resurrect/continuum | [docs/TMUX.md](docs/TMUX.md) |
-| **Pi** | Global instructions, model-routed agents, skills, destructive-command approval gate, saved chains, live subagent inspection, Plannotator, Exa, NVIDIA-NIM guardrails, dynamic workflows | [docs/PI.md](docs/PI.md) |
+| **Pi** | Global instructions, model-routed agents, skills, destructive-command approval gate, saved chains, interactive subagent supervision, Plannotator, Exa, NVIDIA-NIM guardrails, dynamic workflows | [docs/PI.md](docs/PI.md) |
 | **Zsh** | Git-aware prompt, Conda/Mamba, NVM, tool paths, Grok completions, private local override support | [Zsh](#zsh) |
 
 ## Repository layout
